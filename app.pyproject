@@ -1,0 +1,3 @@
+{
+    "files": ["frontend/main.qml","frontend/pages/index.qml","main.py","frontend/dialogs/SuccesDialog.qml"]
+}
