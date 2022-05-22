@@ -1,8 +1,9 @@
 import QtQuick 2.15
+import QtCharts 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
-import "../dialogs"
 import QtQuick.Extras 1.4
+import "../dialogs"
 
 Item {
 
@@ -48,6 +49,7 @@ Item {
         nameFilters: [ "Text files (*.txt)", "All files (*)" ]
         onAccepted: {
             adressPath.text = adressFileDialog.fileUrls.toString()
+            backend.open_mails_file(adressFileDialog.fileUrls)
         }
         onRejected: {
             console.log("Canceled")
@@ -70,6 +72,7 @@ Item {
         width: 462
         height: 30
         horizontalAlignment: Text.AlignLeft
+        readOnly: true
         font.pointSize: 8
         placeholderText: qsTr("Путь до файла с адресами")
     }
@@ -81,6 +84,7 @@ Item {
         width: 462
         height: 30
         horizontalAlignment: Text.AlignLeft
+        readOnly: true
         font.pointSize: 8
         placeholderText: qsTr("Путь до файла с адресами")
     }
@@ -155,6 +159,7 @@ Item {
             y: -6
             width: 784
             height: 157
+            readOnly: true
             placeholderText: qsTr("Прогресс рассыки")
         }
     }
@@ -200,18 +205,51 @@ Item {
         anchors.centerIn: parent
     }
 
-    DelayButton {
-        id: sendMessages
-        x: 684
-        y: 8
-        width: 108
-        height: 99
-        text: "Запуск"
-        onActivated: success.open()
+    Button {
+        id: button1
+        x: 631
+        y: 231
+        width: 51
+        height: 40
+        text: qsTr("||")
+        onClicked: {
+            backend.stop_sending()
+        }
     }
 
+    Button {
+        id: runnerBtn
+        x: 688
+        y: 231
+        text: "Запуск"
+        enabled: true
+        autoExclusive: false
+        //        checked: false
+        //        checkable: true
+        onClicked: {
+            backend.run_send_mails()
+        }
+    }
 
+    Connections {
+        target: backend
 
+        function onMailsFinded(value) {
+            addressCount.text = value
+        }
+
+        function onMailSended(text) {
+            textArea.text = text + '\n' + textArea.text
+        }
+
+        function onMailCounter(value) {
+            happyValue.text = value
+        }
+
+        function onDissableRunner() {
+            runnerBtn.enabled = false
+        }
+    }
 
 }
 
