@@ -49,6 +49,7 @@ class Backend(QObject):
     mailSended = Signal(str)
     mailCounter = Signal(str)
     dissableRunner = Signal()
+    progressBar = Signal(float)
 
 
     list_mails = []
@@ -62,6 +63,14 @@ class Backend(QObject):
             self.mailsFinded.emit(str(len(list_mails)))
             self.list_mails = list_mails
             print(list_mails)
+
+
+    def progress_bar(self, value):
+        """ Чёт я тут не понял математики, но Copilot виднее"""
+
+        progress = int(int(value) / (len(self.list_mails) / 100)) / 100
+        self.progressBar.emit(progress)
+        
     
 
     @Slot()
@@ -86,6 +95,8 @@ class Backend(QObject):
 
         self.worker.sendToEmail.connect(self.mailSended)
         self.worker.counterValue.connect(self.mailCounter)
+        self.worker.counterValue.connect(self.progress_bar)
+
         self.worker.senderComleted.connect(self.stop_thread)
 
 

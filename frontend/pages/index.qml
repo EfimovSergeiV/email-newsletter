@@ -143,7 +143,7 @@ Item {
         y: 301
         width: 784
         height: 14
-        value: 0.3
+        value: 0.0
     }
 
     ScrollView {
@@ -248,6 +248,10 @@ Item {
 
         function onDissableRunner() {
             runnerBtn.enabled = false
+        }
+
+        function onProgressBar(value) {
+            progressBar.value = value
         }
     }
 
