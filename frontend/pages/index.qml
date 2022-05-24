@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick 2.0
 import QtCharts 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
@@ -14,7 +14,7 @@ Item {
         width: 182
         height: 30
         text: qsTr("Шаблон")
-        onClicked: templatelFileDialog.visible = true
+        onClicked: templateFileDialog.visible = true
     }
 
     Button {
@@ -28,13 +28,14 @@ Item {
     }
 
     FileDialog {
-        id: templatelFileDialog
+        id: templateFileDialog
         visible: false
         title: "Выберите шаблон html для рассылки"
         folder: shortcuts.home
-        nameFilters: [ "HTML files (*.html)", "All files (*)" ]
+        nameFilters: ["HTML files (*.html)", "All files (*)"]
         onAccepted: {
-            templatePath.text = templatelFileDialog.fileUrl.toString()
+            templatePath.text = templateFileDialog.fileUrl.toString()
+            backend.set_template(templateFileDialog.fileUrls)
         }
         onRejected: {
             console.log("Canceled")
@@ -46,7 +47,7 @@ Item {
         visible: false
         title: "Файл со списком адресов"
         folder: shortcuts.home
-        nameFilters: [ "Text files (*.txt)", "All files (*)" ]
+        nameFilters: ["Text files (*.txt)", "All files (*)"]
         onAccepted: {
             adressPath.text = adressFileDialog.fileUrls.toString()
             backend.open_mails_file(adressFileDialog.fileUrls)
@@ -89,24 +90,23 @@ Item {
         placeholderText: qsTr("Путь до файла с адресами")
     }
 
-
     ComboBox {
+        id: smtpServer
         x: 8
         y: 129
         width: 175
         height: 26
-        model: [ "Yandex", "Google", "Mail", "Beget", "ProtonMail"]
+        model: ["Yandex", "Google", "Mail", "Beget"]
     }
-
 
     Switch {
         id: smtpTimer
-        x: 555
+        x: 546
         y: 194
-        width: 237
+        width: 246
         height: 24
         text: "Наёбывать SMTP сервер"
-        onClicked: console.log(smtpTimer.position)
+        onClicked: backend.smtp_timer(smtpTimer.position)
     }
 
     TextField {
@@ -127,7 +127,6 @@ Item {
         placeholderText: qsTr("Логин")
     }
 
-
     TextField {
         id: textField2
         x: 189
@@ -135,6 +134,15 @@ Item {
         width: 281
         height: 26
         placeholderText: qsTr("yuor-adress@mailname.ru")
+    }
+
+    TextField {
+        id: textField3
+        x: 8
+        y: 224
+        width: 462
+        height: 28
+        placeholderText: qsTr("Тема письма")
     }
 
     ProgressBar {
@@ -227,6 +235,11 @@ Item {
         //        checked: false
         //        checkable: true
         onClicked: {
+            backend.set_from_mail(textField2.text)
+            backend.set_password(textField1.text)
+            backend.set_login(textField.text)
+            backend.set_mail_theme(textField3.text)
+            backend.set_smtp_server(smtpServer.currentValue)
             backend.run_send_mails()
         }
     }
@@ -254,11 +267,11 @@ Item {
             progressBar.value = value
         }
     }
-
 }
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:0.75;height:480;width:800}
+    D{i:0;autoSize:true;height:480;width:800}
 }
 ##^##*/
+
