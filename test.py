@@ -1,28 +1,37 @@
-# import smtplib
-# from email.mime.multipart import MIMEMultipart
-# from email.mime.text import MIMEText
-
-# smtp = smtplib.SMTP_SSL('smtp.beget.com', 465)
-# smtp.login(user='support@glsvar.ru', password='')
-
-# smtp.sendmail(from_addr="support@glsvar.ru", to_addrs="sys@tehnosvar.ru", msg="Hallo weelt")
-# smtp.close()
-
-
-from email.mime.multipart import MIMEMultipart
-
-from email.mime.text import MIMEText
+from email.message import EmailMessage
 import smtplib
+from email.utils import make_msgid
+import imghdr
 
 
-msg = MIMEMultipart()
-message = "Thank you"
+
+msg = EmailMessage()
+msg.set_content(
+""" Привет мир """
+)
+asparagus_cid = make_msgid()
+
+with open('/home/anon/neuesJahr.html', 'r') as file:
+    template = file.read()
+
+
+msg.add_alternative(template, subtype='html')
+
+# Добавить вложение
+# with open('/home/anon/neuesJahr.jpg', 'rb') as file:
+#     msg.get_payload()[1].add_related(file.read(), 'image', 'jpeg', cid=asparagus_cid)
+
+# with open('/home/anon/neuesJahr.jpg', 'rb') as file:
+#     img_data = file.read()
+#     msg.add_attachment(img_data, maintype='image', subtype=imghdr.what(None, img_data), filename='neuesJahr.jpg')
+
 password = ""
 msg['From'] = "support@glsvar.ru"
 msg['To'] = "sys@tehnosvar.ru"
 msg['Subject'] = "СЕРВИС ОТПРАВКИ ПИСЕМ"
-msg.attach(MIMEText(message, 'plain'))
+
+
 server = smtplib.SMTP_SSL('smtp.beget.com', 465)
 server.login(msg['From'], password)
-server.sendmail(msg['From'], msg['To'], msg.as_string())
+server.sendmail(msg['From'], msg['To'], bytes(msg))
 server.quit()

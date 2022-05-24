@@ -9,10 +9,9 @@ from PySide2.QtGui import QGuiApplication
 from PySide2.QtQml import QQmlApplicationEngine
 from PySide2.QtCore import QObject, Signal, Slot, QThread
 
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.message import EmailMessage
 import smtplib
+from email.utils import make_msgid
 
 
 smtp_servers = {
@@ -28,21 +27,39 @@ def send_mail(from_mail, to_email, theme, template, smtp_server, login, password
 from_mail: {from_mail}
 to_email: {to_email}
 theme: {theme}
-template: {template}
 smtp_server: {smtp_server}
 login: {login}
 password: {password}
     """)
-    msg = MIMEMultipart()
-    message = template
+
+    msg = EmailMessage()
+    # msg.set_content(
+    # """ Привет мир """
+    # )
+    asparagus_cid = make_msgid()
+
+    # with open('/home/anon/neuesJahr.html', 'r') as file:
+    #     rtemplate = file.read()
+
+    msg.add_alternative(template, subtype='html')
+
+    # Добавить вложение
+    # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
+    #     msg.get_payload()[1].add_related(file.read(), 'image', 'jpeg', cid=asparagus_cid)
+
+    # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
+    #     img_data = file.read()
+    #     msg.add_attachment(img_data, maintype='image', subtype=imghdr.what(None, img_data), filename='neuesJahr.jpg')
+
     password = password
     msg['From'] = from_mail
     msg['To'] = to_email
     msg['Subject'] = theme
-    msg.attach(MIMEText(message, 'plain'))
-    server = smtplib.SMTP_SSL('smtp.beget.com', 465)
+
+
+    server = smtplib.SMTP_SSL(smtp_server, 465)
     server.login(msg['From'], password)
-    server.sendmail(msg['From'], msg['To'], msg.as_string())
+    server.sendmail(msg['From'], msg['To'], bytes(msg))
     server.quit()
 
 
