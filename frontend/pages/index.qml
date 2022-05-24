@@ -9,21 +9,23 @@ Item {
 
     Button {
         id: templateFileBtn
-        x: 476
+        x: 610
         y: 8
         width: 182
         height: 30
         text: qsTr("Шаблон")
+        font.bold: false
         onClicked: templateFileDialog.visible = true
     }
 
     Button {
         id: adressFileBtn
-        x: 476
+        x: 610
         y: 44
         width: 182
         height: 30
         text: qsTr("Список счастливчиков")
+        font.bold: false
         onClicked: adressFileDialog.visible = true
     }
 
@@ -60,17 +62,18 @@ Item {
     Label {
         id: label
         x: 8
-        y: 103
+        y: 96
         width: 368
         height: 20
-        text: "Параметры SMTP сервера:"
+        color: "#ffffff"
+        text: "Параметры SMTP (SSL only) сервера :"
     }
 
     TextField {
         id: adressPath
         x: 8
         y: 44
-        width: 462
+        width: 596
         height: 30
         horizontalAlignment: Text.AlignLeft
         readOnly: true
@@ -82,66 +85,101 @@ Item {
         id: templatePath
         x: 8
         y: 8
-        width: 462
+        width: 596
         height: 30
         horizontalAlignment: Text.AlignLeft
         readOnly: true
         font.pointSize: 8
-        placeholderText: qsTr("Путь до файла с адресами")
+        placeholderText: qsTr("Путь до файла с шаблоном")
     }
 
     ComboBox {
         id: smtpServer
         x: 8
-        y: 129
+        y: 122
         width: 175
-        height: 26
+        height: 30
         model: ["Yandex", "Google", "Mail", "Beget"]
     }
 
     Switch {
         id: smtpTimer
-        x: 546
-        y: 194
-        width: 246
+        x: 552
+        y: 122
+        width: 68
         height: 24
-        text: "Наёбывать SMTP сервер"
         onClicked: backend.smtp_timer(smtpTimer.position)
     }
 
     TextField {
         id: textField1
         x: 189
-        y: 193
-        width: 281
-        height: 25
-        placeholderText: qsTr("Пароль")
+        y: 194
+        echoMode: "Password"
+        width: 331
+        height: 30
+        placeholderText: qsTr("...и пароль от него")
     }
 
     TextField {
         id: textField
         x: 189
-        y: 161
-        width: 281
-        height: 25
-        placeholderText: qsTr("Логин")
+        y: 158
+        width: 331
+        height: 30
+        placeholderText: qsTr("Логин от ящика выше")
     }
 
     TextField {
         id: textField2
         x: 189
-        y: 129
-        width: 281
-        height: 26
-        placeholderText: qsTr("yuor-adress@mailname.ru")
+        y: 122
+        width: 331
+        height: 30
+        placeholderText: qsTr("yuor-email-adress@mailname.ru")
+    }
+
+    Rectangle {
+        id: rectangle
+        x: 8
+        y: 315
+        width: 784
+        height: 157
+        color: "#e3e3e3"
+
+        ScrollView {
+            id: scrollView
+            x: 0
+            y: 0
+            width: 776
+            height: 157
+
+            TextArea {
+                id: textArea
+                x: -4
+                y: -6
+                width: 773
+                height: 157
+                color: "#0b0b0b"
+                verticalAlignment: Text.AlignTop
+                wrapMode: Text.NoWrap
+                hoverEnabled: true
+                placeholderText: "лог email рассылки"
+                font.bold: false
+                font.pointSize: 10
+
+                placeholderTextColor: "#1d1d1d"
+                readOnly: true
+            }
+        }
     }
 
     TextField {
         id: textField3
         x: 8
-        y: 224
-        width: 462
-        height: 28
+        y: 230
+        width: 512
+        height: 30
         placeholderText: qsTr("Тема письма")
     }
 
@@ -154,58 +192,48 @@ Item {
         value: 0.0
     }
 
-    ScrollView {
-        id: scrollView
-        x: 8
-        y: 314
-        width: 784
-        height: 157
-
-        TextArea {
-            id: textArea
-            x: -10
-            y: -6
-            width: 784
-            height: 157
-            readOnly: true
-            placeholderText: qsTr("Прогресс рассыки")
-        }
-    }
-
     Label {
         id: label1
         x: 8
         y: 277
         width: 132
         height: 18
+        color: "#ffffff"
         text: "Найдено адресов:"
+        font.bold: true
     }
 
     Label {
         id: addressCount
         x: 146
         y: 277
-        width: 230
+        width: 113
         height: 18
+        color: "#ffffff"
         text: qsTr("0")
+        font.bold: true
     }
 
     Label {
         id: label3
-        x: 382
+        x: 295
         y: 277
         width: 119
         height: 18
+        color: "#ffffff"
         text: qsTr("Осчастливили:")
+        font.bold: true
     }
 
     Label {
         id: happyValue
-        x: 502
+        x: 420
         y: 277
-        width: 290
+        width: 138
         height: 18
+        color: "#ffffff"
         text: qsTr("0")
+        font.bold: true
     }
 
     SuccesDialog {
@@ -215,11 +243,12 @@ Item {
 
     Button {
         id: button1
-        x: 631
-        y: 231
+        x: 635
+        y: 255
         width: 51
         height: 40
-        text: qsTr("||")
+        text: qsTr("II")
+        font.bold: true
         onClicked: {
             backend.stop_sending()
         }
@@ -227,9 +256,10 @@ Item {
 
     Button {
         id: runnerBtn
-        x: 688
-        y: 231
+        x: 692
+        y: 255
         text: "Запуск"
+        font.bold: true
         enabled: true
         autoExclusive: false
         //        checked: false
@@ -267,11 +297,38 @@ Item {
             progressBar.value = value
         }
     }
+
+    Label {
+        id: label2
+        x: 620
+        y: 144
+        width: 173
+        height: 14
+        color: "#ffffff"
+        text: "(Как правило банят, если не наёбывать)"
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+        font.pointSize: 7
+    }
+
+    Label {
+        id: label4
+        x: 620
+        y: 122
+        width: 172
+        height: 24
+        color: "#ffffff"
+        text: qsTr("Наёбывать SMTP сервер")
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+        font.bold: true
+    }
+
 }
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:800}
+    D{i:0;autoSize:true;formeditorZoom:0.9;height:480;width:800}
 }
 ##^##*/
 

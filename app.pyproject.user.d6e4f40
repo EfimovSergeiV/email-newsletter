@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2022-05-24T22:15:29. -->
+<!-- Written by QtCreator 7.0.1, 2022-05-24T12:51:48. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
-  <value type="QByteArray">{f931818a-2593-4b24-9e35-5a4c946209cb}</value>
+  <value type="QByteArray">{d6e4f40c-0d8d-476d-ab5f-a5aa9a68c04d}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -59,17 +59,6 @@
  <data>
   <variable>ProjectExplorer.Project.PluginSettings</variable>
   <valuemap type="QVariantMap">
-   <valuemap type="QVariantMap" key="AutoTest.ActiveFrameworks">
-    <value type="bool" key="AutoTest.Framework.Boost">true</value>
-    <value type="bool" key="AutoTest.Framework.CTest">false</value>
-    <value type="bool" key="AutoTest.Framework.Catch">true</value>
-    <value type="bool" key="AutoTest.Framework.GTest">true</value>
-    <value type="bool" key="AutoTest.Framework.QtQuickTest">true</value>
-    <value type="bool" key="AutoTest.Framework.QtTest">true</value>
-   </valuemap>
-   <valuemap type="QVariantMap" key="AutoTest.CheckStates"/>
-   <value type="int" key="AutoTest.RunAfterBuild">0</value>
-   <value type="bool" key="AutoTest.UseGlobal">true</value>
    <valuelist type="QVariantList" key="ClangCodeModel.CustomCommandLineKey"/>
    <value type="bool" key="ClangCodeModel.UseGlobalConfig">true</value>
    <value type="QString" key="ClangCodeModel.WarningConfigId">Builtin.BuildSystem</value>
@@ -77,7 +66,7 @@
     <value type="bool" key="ClangTools.AnalyzeOpenFiles">true</value>
     <value type="bool" key="ClangTools.BuildBeforeAnalysis">true</value>
     <value type="QString" key="ClangTools.DiagnosticConfig">Builtin.DefaultTidyAndClazy</value>
-    <value type="int" key="ClangTools.ParallelJobs">2</value>
+    <value type="int" key="ClangTools.ParallelJobs">4</value>
     <valuelist type="QVariantList" key="ClangTools.SelectedDirs"/>
     <valuelist type="QVariantList" key="ClangTools.SelectedFiles"/>
     <valuelist type="QVariantList" key="ClangTools.SuppressedDiagnostics"/>
@@ -119,11 +108,13 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">/home/anon/dev/email-newsletter/main.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration./home/anon/dev/email-newsletter/main.py</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/anon/dev/email-newsletter/main.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{7ab59391-2ad2-4525-9fd9-836004d18883}</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{272d26f3-e120-4f11-9295-338dbdc8695b}</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">/home/anon/dev/email-newsletter/main.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/anon/dev/email-newsletter</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

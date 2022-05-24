@@ -20,6 +20,16 @@ Window {
         color: "#aebfcd"
         anchors.fill: parent
 
+
+        Image {
+            id: image
+            x: 0
+            y: 0
+            width: 800
+            height: 480
+            source: "pages/bg.png"
+            fillMode: Image.PreserveAspectFit
+        }
         StackView {
             id: stackView
             anchors.fill: parent
@@ -62,3 +72,9 @@ Window {
     //    flags: Qt.Window | Qt.FramelessWindowHint
 }
 
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:0.75}
+}
+##^##*/
