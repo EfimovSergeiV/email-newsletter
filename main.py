@@ -32,16 +32,8 @@ login: {login}
 password: {password}
     """)
 
-    msg = EmailMessage()
-    # msg.set_content(
-    # """ Привет мир """
-    # )
-    asparagus_cid = make_msgid()
-
-    # with open('/home/anon/neuesJahr.html', 'r') as file:
-    #     rtemplate = file.read()
-
-    msg.add_alternative(template, subtype='html')
+    # msg = EmailMessage()
+    # msg.add_alternative(template, subtype='html')    
 
     # Добавить вложение
     # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
@@ -51,22 +43,22 @@ password: {password}
     #     img_data = file.read()
     #     msg.add_attachment(img_data, maintype='image', subtype=imghdr.what(None, img_data), filename='neuesJahr.jpg')
 
-    password = password
-    msg['From'] = from_mail
-    msg['To'] = to_email
-    msg['Subject'] = theme
+    # password = password
+    # msg['From'] = from_mail
+    # msg['To'] = to_email
+    # msg['Subject'] = theme
 
 
-    server = smtplib.SMTP_SSL(smtp_server, 465)
-    server.login(msg['From'], password)
-    server.sendmail(msg['From'], msg['To'], bytes(msg))
-    server.quit()
+    # server = smtplib.SMTP_SSL(smtp_server, 465)
+    # server.login(msg['From'], password)
+    # server.sendmail(msg['From'], msg['To'], bytes(msg))
+    # server.quit()
 
 
 
-class Worker(QObject):
+class SenderWorker(QObject):
     def __init__(self):
-        super(Worker, self).__init__()
+        super(SenderWorker, self).__init__()
         self.data = None
         self.count = None
         self._isRunning = True
@@ -89,9 +81,7 @@ class Worker(QObject):
     def handler(self):
         """ Отправка писем """
 
-        while self.data:
-            if self._isRunning == False:
-                break
+        while self.data and self._isRunning:
             mail = self.data.pop()
             
             self.count += 1
@@ -205,7 +195,10 @@ class Backend(QObject):
     @Slot()
     def stop_sending(self):
         """ Останавливаем поток отправки писем """
-        self.stop_thread()
+        print("Пробуем остановить поток")
+        self.test = False
+        self.sending_worker.stop()
+        self.sending_thread.quit()
 
 
     @Slot()
@@ -213,36 +206,31 @@ class Backend(QObject):
         """ Запускаем поток отправки писем """
 
         # Создаём экземпляр и помещаем в поток
-        self.thread = QThread()
-        self.worker = Worker()
-        self.worker.moveToThread(self.thread)
+        self.sending_thread = QThread()
+        self.sending_worker = SenderWorker()
+        self.sending_worker.moveToThread(self.sending_thread)
 
         # Передаём данные в поток
-        self.worker.data = self.list_mails
-        self.worker.count = self.last_count
-        self.worker.theme = self.theme
-        self.worker.template = self.template
-        self.worker.from_mail = self.from_mail
-        self.worker.smtp_server = self.smtp_server
-        self.worker.login = self.login
-        self.worker.password = self.password
-        self.worker.timer = self.timer
+        self.sending_worker.data = self.list_mails
+        self.sending_worker.count = self.last_count
+        self.sending_worker.theme = self.theme
+        self.sending_worker.template = self.template
+        self.sending_worker.from_mail = self.from_mail
+        self.sending_worker.smtp_server = self.smtp_server
+        self.sending_worker.login = self.login
+        self.sending_worker.password = self.password
+        self.sending_worker.timer = self.timer
 
-        self.thread.started.connect(self.worker.handler)
-        self.thread.start()
+        self.sending_thread.started.connect(self.sending_worker.handler)
+        
+        self.sending_worker.sendToEmail.connect(self.mailSended)
+        self.sending_worker.counterValue.connect(self.mailCounter)
 
-        self.worker.sendToEmail.connect(self.mailSended)
-        self.worker.counterValue.connect(self.mailCounter)
-
-        self.worker.returnMails.connect(self.restore_sending)
-        self.worker.counterValue.connect(self.progress_bar)
-        self.worker.senderComleted.connect(self.stop_thread)
-
-
-    def stop_thread(self):
-        self.worker.stop()
-        self.thread.quit()
-        # self.thread.wait()
+        self.sending_worker.returnMails.connect(self.restore_sending)
+        self.sending_worker.counterValue.connect(self.progress_bar)
+        self.sending_worker.senderComleted.connect(self.stop_sending)
+            
+        self.sending_thread.start()
 
 
 

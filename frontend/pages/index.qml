@@ -151,14 +151,14 @@ Item {
             id: scrollView
             x: 0
             y: 0
-            width: 776
+            width: 784
             height: 157
 
             TextArea {
                 id: textArea
                 x: -4
                 y: -6
-                width: 773
+                width: 778
                 height: 157
                 color: "#0b0b0b"
                 verticalAlignment: Text.AlignTop
@@ -323,12 +323,11 @@ Item {
         verticalAlignment: Text.AlignVCenter
         font.bold: true
     }
-
 }
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:0.9;height:480;width:800}
+    D{i:0;autoSize:true;formeditorZoom:1.25;height:480;width:800}
 }
 ##^##*/
 
