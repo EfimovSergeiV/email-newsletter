@@ -111,14 +111,39 @@ Item {
         onClicked: backend.smtp_timer(smtpTimer.position)
     }
 
+    Label {
+        id: label2
+        x: 620
+        y: 144
+        width: 173
+        height: 14
+        color: "#ffffff"
+        text: "(Как правило банят, если не наёбывать)"
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+        font.pointSize: 7
+    }
+
+    Label {
+        id: label4
+        x: 620
+        y: 122
+        width: 172
+        height: 24
+        color: "#ffffff"
+        text: qsTr("Наёбывать SMTP сервер")
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+        font.bold: true
+    }
+
     TextField {
-        id: textField1
+        id: textField2
         x: 189
-        y: 194
-        echoMode: "Password"
+        y: 122
         width: 331
         height: 30
-        placeholderText: qsTr("...и пароль от него")
+        placeholderText: qsTr("yuor-email-adress@mailname.ru")
     }
 
     TextField {
@@ -131,12 +156,22 @@ Item {
     }
 
     TextField {
-        id: textField2
+        id: textField1
         x: 189
-        y: 122
+        y: 194
+        echoMode: "Password"
         width: 331
         height: 30
-        placeholderText: qsTr("yuor-email-adress@mailname.ru")
+        placeholderText: qsTr("...и пароль от него")
+    }
+
+    TextField {
+        id: textField3
+        x: 8
+        y: 230
+        width: 512
+        height: 30
+        placeholderText: qsTr("Тема письма")
     }
 
     Rectangle {
@@ -172,15 +207,6 @@ Item {
                 readOnly: true
             }
         }
-    }
-
-    TextField {
-        id: textField3
-        x: 8
-        y: 230
-        width: 512
-        height: 30
-        placeholderText: qsTr("Тема письма")
     }
 
     ProgressBar {
@@ -296,32 +322,11 @@ Item {
         function onProgressBar(value) {
             progressBar.value = value
         }
-    }
 
-    Label {
-        id: label2
-        x: 620
-        y: 144
-        width: 173
-        height: 14
-        color: "#ffffff"
-        text: "(Как правило банят, если не наёбывать)"
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignVCenter
-        font.pointSize: 7
-    }
-
-    Label {
-        id: label4
-        x: 620
-        y: 122
-        width: 172
-        height: 24
-        color: "#ffffff"
-        text: qsTr("Наёбывать SMTP сервер")
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignVCenter
-        font.bold: true
+        function onErrorSignal(text) {
+            success.status = text
+            success.open()
+        }
     }
 }
 

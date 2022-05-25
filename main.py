@@ -1,6 +1,7 @@
 # This Python file uses the following encoding: utf-8
 from pathlib import Path
 import os, sys, smtplib
+from socket import timeout
 import email.message
 from time import sleep
 from random import randrange
@@ -11,6 +12,7 @@ from PySide2.QtCore import QObject, Signal, Slot, QThread
 
 from email.message import EmailMessage
 import smtplib
+import socket
 from email.utils import make_msgid
 
 
@@ -31,28 +33,35 @@ smtp_server: {smtp_server}
 login: {login}
 password: {password}
     """)
+    try:
+        socket.setdefaulttimeout(120)
+        msg = EmailMessage()
+        msg.add_alternative(template, subtype='html')    
 
-    # msg = EmailMessage()
-    # msg.add_alternative(template, subtype='html')    
+        # #Добавить вложение
+        # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
+        #     msg.get_payload()[1].add_related(file.read(), 'image', 'jpeg', cid=asparagus_cid)
 
-    # Добавить вложение
-    # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
-    #     msg.get_payload()[1].add_related(file.read(), 'image', 'jpeg', cid=asparagus_cid)
+        # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
+        #     img_data = file.read()
+        #     msg.add_attachment(img_data, maintype='image', subtype=imghdr.what(None, img_data), filename='neuesJahr.jpg')
 
-    # with open('/home/anon/neuesJahr.jpg', 'rb') as file:
-    #     img_data = file.read()
-    #     msg.add_attachment(img_data, maintype='image', subtype=imghdr.what(None, img_data), filename='neuesJahr.jpg')
-
-    # password = password
-    # msg['From'] = from_mail
-    # msg['To'] = to_email
-    # msg['Subject'] = theme
+        password = password
+        msg['From'] = from_mail
+        msg['To'] = to_email
+        msg['Subject'] = theme
 
 
-    # server = smtplib.SMTP_SSL(smtp_server, 465)
-    # server.login(msg['From'], password)
-    # server.sendmail(msg['From'], msg['To'], bytes(msg))
-    # server.quit()
+        server = smtplib.SMTP_SSL(smtp_server, 465)
+        print("Логинимся")
+        server.login(msg['From'], password)
+        print("Отправляем письмо")
+        server.sendmail(msg['From'], msg['To'], bytes(msg))
+        server.quit()
+        return True
+    except:
+        print("Ошибка отправки письма")
+        return False
 
 
 
@@ -85,10 +94,7 @@ class SenderWorker(QObject):
             mail = self.data.pop()
             
             self.count += 1
-            self.counterValue.emit(str(self.count))
-            self.sendToEmail.emit(mail)
-
-            send_mail(
+            sending = send_mail(
                 to_email=mail,
                 from_mail=self.from_mail,
                 theme=self.theme,
@@ -97,6 +103,10 @@ class SenderWorker(QObject):
                 login=self.login,
                 password=self.password
             )
+
+            status = "УСПЕШНО" if sending else "ОШИБКА"
+            self.counterValue.emit(str(self.count))
+            self.sendToEmail.emit(f"{ str(status) }\t { mail }")
 
             # Пауза между отправкой писем
             if self.timer == 1:
@@ -117,6 +127,7 @@ class Backend(QObject):
     mailCounter = Signal(str)
     dissableRunner = Signal()
     progressBar = Signal(float)
+    errorSignal = Signal(str)
 
     theme = None
     template = None
@@ -141,6 +152,10 @@ class Backend(QObject):
     def restore_sending(self, list_mails):
         """ Восстанавливаем отправку писем """
         self.list_mails = list_mails
+
+    def success_sending(self):
+        """ Отправка писем завершена """
+        self.errorSignal.emit("Рассылка вроде прошла")
 
 
     @Slot(str)
@@ -205,32 +220,36 @@ class Backend(QObject):
     def run_send_mails(self):
         """ Запускаем поток отправки писем """
 
-        # Создаём экземпляр и помещаем в поток
-        self.sending_thread = QThread()
-        self.sending_worker = SenderWorker()
-        self.sending_worker.moveToThread(self.sending_thread)
+        if None not in (self.list_mails, self.theme, self.template, self.from_mail, self.smtp_server, self.login, self.password):
+            # Создаём экземпляр и помещаем в поток
+            self.sending_thread = QThread()
+            self.sending_worker = SenderWorker()
+            self.sending_worker.moveToThread(self.sending_thread)
 
-        # Передаём данные в поток
-        self.sending_worker.data = self.list_mails
-        self.sending_worker.count = self.last_count
-        self.sending_worker.theme = self.theme
-        self.sending_worker.template = self.template
-        self.sending_worker.from_mail = self.from_mail
-        self.sending_worker.smtp_server = self.smtp_server
-        self.sending_worker.login = self.login
-        self.sending_worker.password = self.password
-        self.sending_worker.timer = self.timer
+            # Передаём данные в поток
+            self.sending_worker.data = self.list_mails
+            self.sending_worker.count = self.last_count
+            self.sending_worker.theme = self.theme
+            self.sending_worker.template = self.template
+            self.sending_worker.from_mail = self.from_mail
+            self.sending_worker.smtp_server = self.smtp_server
+            self.sending_worker.login = self.login
+            self.sending_worker.password = self.password
+            self.sending_worker.timer = self.timer
 
-        self.sending_thread.started.connect(self.sending_worker.handler)
-        
-        self.sending_worker.sendToEmail.connect(self.mailSended)
-        self.sending_worker.counterValue.connect(self.mailCounter)
-
-        self.sending_worker.returnMails.connect(self.restore_sending)
-        self.sending_worker.counterValue.connect(self.progress_bar)
-        self.sending_worker.senderComleted.connect(self.stop_sending)
+            self.sending_thread.started.connect(self.sending_worker.handler)
             
-        self.sending_thread.start()
+            self.sending_worker.sendToEmail.connect(self.mailSended)
+            self.sending_worker.counterValue.connect(self.mailCounter)
+
+            self.sending_worker.returnMails.connect(self.restore_sending)
+            self.sending_worker.counterValue.connect(self.progress_bar)
+            self.sending_worker.senderComleted.connect(self.success_sending)
+            self.sending_worker.senderComleted.connect(self.stop_sending)
+                
+            self.sending_thread.start()
+        else:
+            self.errorSignal.emit("Не все поля заполнены")
 
 
 
@@ -245,7 +264,7 @@ if __name__ == "__main__":
     backend = Backend()
     engine.rootContext().setContextProperty("backend", backend)
 
-    engine.load(os.fspath(Path(__file__).resolve().parent / "frontend/main.qml"))
+    engine.load(os.fspath(Path(__file__).resolve().parent / "src/main.qml"))
 
     if not engine.rootObjects():
         sys.exit(-1)
