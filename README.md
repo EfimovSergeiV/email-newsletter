@@ -21,6 +21,6 @@ tar -czvf themailcat-linux-amd64.tar.gz TheMailCat
 ```
     
 # Сборки:
-Linux   :
+Linux   : https://drive.google.com/file/d/1Z7xlp-z4rAf0yTi8UQ50rSKPdQQbkrt6/view?usp=sharing
 
 Windows :
